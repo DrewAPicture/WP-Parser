@@ -564,10 +564,9 @@ class Importer implements LoggerAwareInterface {
 		// Look for an existing post for this item
 		$existing_post_id = $wpdb->get_var(
 			$q = $wpdb->prepare(
-				"SELECT ID FROM $wpdb->posts WHERE post_name = %s AND post_type = %s AND post_parent = %d LIMIT 1",
+				"SELECT ID FROM $wpdb->posts WHERE post_name = %s AND post_type = %s LIMIT 1",
 				$slug,
-				$post_data['post_type'],
-				(int) $parent_post_id
+				$post_data['post_type']
 			)
 		);
 
@@ -583,6 +582,7 @@ class Importer implements LoggerAwareInterface {
 		if ( ! empty( $existing_post_id ) ) {
 			$is_new_post     = false;
 			$post_id = $post_data['ID'] = (int) $existing_post_id;
+			$post_data['post_parent'] = (int) $parent_post_id;
 			$post_needed_update = array_diff_assoc( sanitize_post( $post_data, 'db' ), get_post( $existing_post_id, ARRAY_A, 'db' ) );
 			if ( $post_needed_update ) {
 				$post_id = wp_update_post( wp_slash( $post_data ), true );
